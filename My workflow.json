@@ -1,0 +1,792 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "23c1d1dc-b640-41e7-a13f-d88021486dea",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        384
+      ],
+      "webhookId": "685eccda-d169-470e-a6c0-b28f10dedbda",
+      "credentials": {
+        "telegramApi": {
+          "id": "wpibR6kGC3C9U5Bl",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message?.text }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "/start"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message?.text }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "➕ Додати витрату"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message?.text }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "📋 Історія"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message?.text }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "📊 Разом за сьогодні"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "text_message"
+        }
+      },
+      "id": "4f39a523-9350-4a32-9447-108543c6c402",
+      "name": "Route update",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "💰 Облік витрат. Оберіть дію 👇",
+        "replyMarkup": "replyKeyboard",
+        "replyKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "➕ Додати витрату",
+                    "additionalFields": {}
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "📋 Історія",
+                    "additionalFields": {}
+                  },
+                  {
+                    "text": "📊 Разом за сьогодні",
+                    "additionalFields": {}
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "replyKeyboardOptions": {
+          "resize_keyboard": true
+        },
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "8576d1ac-910b-4952-9f50-4b9f3ddeb7f0",
+      "name": "Send menu",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        448,
+        0
+      ],
+      "webhookId": "656a3495-84f8-4cf5-bd09-fc70c3611b2a",
+      "credentials": {
+        "telegramApi": {
+          "id": "wpibR6kGC3C9U5Bl",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "7kFjtPEz5vrAer89",
+          "cachedResultName": "telegram_bot_state"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "chat_id",
+              "keyValue": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "chat_id"
+          ],
+          "value": {
+            "chat_id": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+            "awaiting": "expense"
+          },
+          "schema": [
+            {
+              "id": "chat_id",
+              "displayName": "chat_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "awaiting",
+              "displayName": "awaiting",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7d78e0ea-f55d-430c-b283-af8418ed7d20",
+      "name": "Set awaiting state",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        448,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "Напишіть суму і на що, напр. `150 кава` 📝",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "37505c01-687e-4096-b602-0acdd6667160",
+      "name": "Prompt for expense",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        672,
+        192
+      ],
+      "webhookId": "9b68c8a9-577d-489f-bf71-fbcebbf11d08",
+      "credentials": {
+        "telegramApi": {
+          "id": "wpibR6kGC3C9U5Bl",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1f8wsdsuUCBaN8RDClBZx80NlPWWQkkXXqLCzMPTE-J8",
+          "mode": "list",
+          "cachedResultName": "test",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1f8wsdsuUCBaN8RDClBZx80NlPWWQkkXXqLCzMPTE-J8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Лист1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1f8wsdsuUCBaN8RDClBZx80NlPWWQkkXXqLCzMPTE-J8/edit#gid=0"
+        },
+        "options": {}
+      },
+      "id": "1665f9ca-0408-4a6d-8be0-572321129a70",
+      "name": "Read expenses (history)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        384
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "7IQ88wnD26RpjCvk",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $('Read expenses (history)').all().filter(i => Object.keys(i.json).length > 0);\nlet text;\nif (rows.length === 0) {\n  text = 'Витрат поки немає.';\n} else {\n  const last = rows.slice(-10);\n  const lines = last.map(r => `${r.json.Date || ''} — ${r.json.Amount || '0'} грн — ${r.json.Category || ''}`);\n  text = '📋 Останні витрати:\\n' + lines.join('\\n');\n}\nreturn [{ json: { text } }];"
+      },
+      "id": "76751716-bacc-402b-8f2e-cacf205f6737",
+      "name": "Build history list",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "67926aba-78ae-41da-a269-417bae160b34",
+      "name": "Send history",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        896,
+        384
+      ],
+      "webhookId": "bf872329-2ad5-49bd-9b98-33eac2712a99",
+      "credentials": {
+        "telegramApi": {
+          "id": "wpibR6kGC3C9U5Bl",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1f8wsdsuUCBaN8RDClBZx80NlPWWQkkXXqLCzMPTE-J8",
+          "mode": "list",
+          "cachedResultName": "test",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1f8wsdsuUCBaN8RDClBZx80NlPWWQkkXXqLCzMPTE-J8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Лист1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1f8wsdsuUCBaN8RDClBZx80NlPWWQkkXXqLCzMPTE-J8/edit#gid=0"
+        },
+        "options": {}
+      },
+      "id": "fc3bc515-65bb-4a44-80f0-0e72ada6e1a3",
+      "name": "Read expenses (total)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        576
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "7IQ88wnD26RpjCvk",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $('Read expenses (total)').all().filter(i => Object.keys(i.json).length > 0);\nconst today = DateTime.now().setZone('Europe/Kiev').toFormat('dd.MM.yyyy');\nlet sum = 0;\nfor (const r of rows) {\n  const d = (r.json.Date || '').toString();\n  if (d.startsWith(today)) {\n    let a = (r.json.Amount == null ? '' : r.json.Amount).toString().replace(/\\s/g, '').replace(',', '.');\n    sum += parseFloat(a) || 0;\n  }\n}\nreturn [{ json: { text: `📊 Сьогодні витрачено: ${sum} грн` } }];"
+      },
+      "id": "9895a38c-40c1-4f94-9e40-ec955c28e2bc",
+      "name": "Build total today",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        576
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "10cd1d32-ada9-4026-a436-49cb987d5bce",
+      "name": "Send total",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        896,
+        576
+      ],
+      "webhookId": "56452141-cf4b-4e67-a362-7262bbd86508",
+      "credentials": {
+        "telegramApi": {
+          "id": "wpibR6kGC3C9U5Bl",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "7kFjtPEz5vrAer89",
+          "cachedResultName": "telegram_bot_state"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "chat_id",
+              "keyValue": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
+            },
+            {
+              "keyName": "awaiting",
+              "keyValue": "expense"
+            }
+          ]
+        },
+        "limit": 1
+      },
+      "id": "bf93c0fc-ff00-45d7-aaf7-1a2b8c77722c",
+      "name": "Get awaiting state",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        448,
+        768
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = ($('Telegram Trigger').item.json.message.text || '').toString();\nconst m = raw.match(/-?\\d[\\d\\s.,]*/);\nlet amount = 0;\nlet category = raw.trim();\nif (m) {\n  let numStr = m[0].replace(/\\s/g, '');\n  if (numStr.includes(',') && numStr.includes('.')) {\n    numStr = numStr.replace(/,/g, '');\n  } else if (numStr.includes(',')) {\n    numStr = numStr.replace(/,/g, '.');\n  }\n  amount = parseFloat(numStr) || 0;\n  category = raw.replace(m[0], '').trim();\n}\nif (!category) category = 'інше';\nreturn [{ json: { amount, category } }];"
+      },
+      "id": "acde2fa1-2aab-4af1-99b8-c40c7a9bd502",
+      "name": "Parse expense",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        768
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1f8wsdsuUCBaN8RDClBZx80NlPWWQkkXXqLCzMPTE-J8",
+          "mode": "list",
+          "cachedResultName": "test",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1f8wsdsuUCBaN8RDClBZx80NlPWWQkkXXqLCzMPTE-J8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Лист1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1f8wsdsuUCBaN8RDClBZx80NlPWWQkkXXqLCzMPTE-J8/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $now.setZone(\"Europe/Kiev\").toFormat(\"dd.MM.yyyy HH:mm:ss\") }}",
+            "Username": "={{ $('Telegram Trigger').item.json.message.from.username }}",
+            "Amount": "={{ $('Parse expense').item.json.amount }}",
+            "Category": "={{ $('Parse expense').item.json.category }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Username",
+              "displayName": "Username",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Amount",
+              "displayName": "Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "e5fd5e07-3fad-4fe4-965f-0a78f33809c2",
+      "name": "Append expense",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        896,
+        768
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "7IQ88wnD26RpjCvk",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "7kFjtPEz5vrAer89",
+          "cachedResultName": "telegram_bot_state"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "chat_id",
+              "keyValue": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "chat_id"
+          ],
+          "value": {
+            "chat_id": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+            "awaiting": ""
+          },
+          "schema": [
+            {
+              "id": "chat_id",
+              "displayName": "chat_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "awaiting",
+              "displayName": "awaiting",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4f2e37c9-a58e-489c-8ee2-f624a94d3d70",
+      "name": "Clear awaiting state",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1120,
+        768
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=Записано: {{ $(\"Parse expense\").item.json.amount }} грн — {{ $(\"Parse expense\").item.json.category }} ✅",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "805ab3c5-4126-429e-9519-81605a5b6ecb",
+      "name": "Send confirmation",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1344,
+        768
+      ],
+      "webhookId": "89315e0f-1a35-4e33-bfcf-73d2f5e146ba",
+      "credentials": {
+        "telegramApi": {
+          "id": "wpibR6kGC3C9U5Bl",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Route update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route update": {
+      "main": [
+        [
+          {
+            "node": "Send menu",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set awaiting state",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Read expenses (history)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Read expenses (total)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get awaiting state",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set awaiting state": {
+      "main": [
+        [
+          {
+            "node": "Prompt for expense",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read expenses (history)": {
+      "main": [
+        [
+          {
+            "node": "Build history list",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build history list": {
+      "main": [
+        [
+          {
+            "node": "Send history",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read expenses (total)": {
+      "main": [
+        [
+          {
+            "node": "Build total today",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build total today": {
+      "main": [
+        [
+          {
+            "node": "Send total",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get awaiting state": {
+      "main": [
+        [
+          {
+            "node": "Parse expense",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse expense": {
+      "main": [
+        [
+          {
+            "node": "Append expense",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append expense": {
+      "main": [
+        [
+          {
+            "node": "Clear awaiting state",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clear awaiting state": {
+      "main": [
+        [
+          {
+            "node": "Send confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "74f0e29d-da27-4ba0-be40-00f616b77115",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c33e1a7c03acefd54eb5edae6d59bcded49adc3147c677125a27fdbca8d43a7c"
+  },
+  "nodeGroups": [],
+  "id": "kmLVDHtVOV8uurEf",
+  "tags": []
+}
